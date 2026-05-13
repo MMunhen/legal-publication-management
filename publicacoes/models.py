@@ -12,11 +12,7 @@ class Publicacao(models.Model):
         ('pago', 'Pago'),
     )
 
-    cliente = models.ForeignKey(
-        Empresa,
-        on_delete=models.CASCADE,
-        related_name='publicacoes'
-    )
+    cliente = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='publicacoes')
 
     funcionario_responsavel = models.ForeignKey(
         Usuario,
@@ -29,15 +25,19 @@ class Publicacao(models.Model):
     titulo = models.CharField(max_length=200)
 
     arquivo = models.FileField(
-        upload_to='publicacoes/',
+        upload_to='publicacoes/textos_crus/',
+        blank=True,
+        null=True
+    )
+
+    arquivo_formatado = models.FileField(
+        upload_to='publicacoes/materias_formatadas/',
         blank=True,
         null=True
     )
 
     jornal = models.CharField(max_length=100, blank=True)
-
     data_pedido = models.DateTimeField(auto_now_add=True)
-
     data_publicacao = models.DateField(blank=True, null=True)
 
     status = models.CharField(
@@ -61,3 +61,28 @@ class Publicacao(models.Model):
 
     def __str__(self):
         return self.titulo
+
+
+class MensagemPublicacao(models.Model):
+    publicacao = models.ForeignKey(
+        Publicacao,
+        on_delete=models.CASCADE,
+        related_name='mensagens'
+    )
+
+    autor = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE
+    )
+
+    texto = models.TextField()
+
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Mensagem da Publicação'
+        verbose_name_plural = 'Mensagens da Publicação'
+        ordering = ['criada_em']
+
+    def __str__(self):
+        return f'{self.autor} - {self.publicacao}'

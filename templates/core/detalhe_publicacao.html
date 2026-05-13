@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes da Publicidade{% endblock %}
+
+{% block content %}
+    <h2>{{ publicacao.titulo }}</h2>
+
+    <p><strong>Cliente:</strong> {{ publicacao.cliente }}</p>
+    <p><strong>Funcionário responsável:</strong> {{ publicacao.funcionario_responsavel|default:"-" }}</p>
+    <p>
+        <strong>Status:</strong>
+            {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
+                Aguardando pagamento
+            {% else %}
+                {{ publicacao.get_status_display }}
+            {% endif %}
+    </p>
+    <p><strong>Jornal:</strong> {{ publicacao.jornal|default:"-" }}</p>
+    <p><strong>Data do pedido:</strong> {{ publicacao.data_pedido }}</p>
+    <p><strong>Data da publicação:</strong> {{ publicacao.data_publicacao|default:"-" }}</p>
+
+    {% if publicacao.arquivo %}
+        <p>
+            <strong>Texto:</strong>
+            <a href="{{ publicacao.arquivo.url }}" target="_blank">Abrir arquivo</a>
+        </p>
+    {% endif %}
+
+    {% if publicacao.arquivo_formatado %}
+        <p>
+            <strong>Matéria formatada:</strong>
+            <a href="{{ publicacao.arquivo_formatado.url }}" target="_blank">Abrir matéria final</a>
+        </p>
+    {% endif %}
+
+    {% if request.user.tipo_usuario == 'admin' %}
+        <hr>
+
+        <h3>Área do administrador</h3>
+
+        <h4>Atualizar status</h4>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="atualizar_status">
+            {{ status_form.as_p }}
+            <button type="submit">Atualizar status</button>
+        </form>
+
+        <h4>Chat com o cliente</h4>
+
+        {% for mensagem in mensagens %}
+            <p>
+                <strong>{{ mensagem.autor }}:</strong>
+                {{ mensagem.texto }}
+                <br>
+                <small>{{ mensagem.criada_em }}</small>
+            </p>
+        {% empty %}
+            <p>Nenhuma mensagem ainda.</p>
+        {% endfor %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="enviar_mensagem">
+            {{ mensagem_form.as_p }}
+            <button type="submit">Enviar mensagem</button>
+        </form>
+
+        <h4>Editar dados da publicidade</h4>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="editar_publicacao">
+
+            {{ admin_form.as_p }}
+
+            <button type="submit">Salvar alterações</button>
+        </form>
+
+
+    {% endif %}
+
+    {% if request.user.tipo_usuario == 'cliente' %}
+        <hr>
+
+        <h3>Área do cliente</h3>
+
+        {% if publicacao.status == 'aguardando_aprovacao' %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="acao" value="confirmar_publicacao">
+                <button type="submit">Confirmar publicação</button>
+            </form>
+        {% endif %}
+
+        <h3>Chat com o administrador</h3>
+
+        {% for mensagem in mensagens %}
+            <p>
+                <strong>{{ mensagem.autor }}:</strong>
+                {{ mensagem.texto }}
+                <br>
+                <small>{{ mensagem.criada_em }}</small>
+            </p>
+        {% empty %}
+            <p>Nenhuma mensagem ainda.</p>
+        {% endfor %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="enviar_mensagem">
+            {{ mensagem_form.as_p }}
+            <button type="submit">Enviar mensagem</button>
+        </form>
+    {% endif %}
+
+    {% if request.user.tipo_usuario == 'funcionario' %}
+        <hr>
+
+        <h3>Área do funcionário</h3>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="upload_materia">
+            {{ materia_form.as_p }}
+            <button type="submit">Enviar matéria formatada</button>
+        </form>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'dashboard' %}">Voltar</a>
+{% endblock %}

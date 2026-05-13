@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Dashboard</h2>
+
+    <p>Bem-vindo, {{ request.user.username }}</p>
+    <p>Tipo de usuário: {{ request.user.get_tipo_usuario_display }}</p>
+
+    <h3>Publicidades</h3>
+    
+    {% if request.user.tipo_usuario == 'cliente' %}
+        <hr>
+        <details>
+            <summary>Solicitar nova publicidade</summary>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="acao" value="nova_publicacao">
+                {{ nova_publicacao_form.as_p }}
+                <button type="submit">Enviar solicitação</button>
+            </form>
+        </details>
+    {% endif %}
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Jornal</th>
+            <th>Data de Publicação</th>
+
+            {% if request.user.tipo_usuario != 'funcionario' %}
+                <th>Valor</th>
+            {% endif %}
+        </tr>
+
+        {% for publicacao in publicacoes %}
+            <tr>
+                <td>
+                    <a href="{% url 'detalhe_publicacao' publicacao.id %}">{{ publicacao.titulo }}</a>
+                </td>
+                <td>
+                    {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
+                        Aguardando pagamento
+                    {% else %}
+                        {{ publicacao.get_status_display }}
+                    {% endif %}
+                </td>
+                <td>{{ publicacao.jornal|default:"-" }}</td>
+                <td>{{ publicacao.data_publicacao|default:"-" }}</td>
+
+                {% if request.user.tipo_usuario != 'funcionario' %}
+                    <td>
+                        {% if publicacao.valor_definido %}
+                            R$ {{ publicacao.valor }}
+                        {% else %}
+                            Não definido
+                        {% endif %}
+                    </td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">Nenhuma publicidade encontrada.</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
