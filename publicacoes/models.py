@@ -46,6 +46,8 @@ class Publicacao(models.Model):
         default='pendente'
     )
 
+    tamanho = models.CharField(max_length=50, blank=True)
+
     valor_definido = models.BooleanField(default=False)
 
     valor = models.DecimalField(

@@ -64,6 +64,7 @@ class AdminPublicacaoForm(forms.ModelForm):
             'funcionario_responsavel',
             'jornal',
             'data_publicacao',
+            'tamanho',
             'valor_definido',
             'valor',
         ]
@@ -73,6 +74,7 @@ class AdminPublicacaoForm(forms.ModelForm):
             'funcionario_responsavel': 'Funcionário responsável',
             'jornal': 'Jornal',
             'data_publicacao': 'Data da publicação',
+            'tamanho': 'Tamanho da publicação',
             'valor_definido': 'Valor definido',
             'valor': 'Valor',
         }

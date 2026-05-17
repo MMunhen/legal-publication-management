@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from publicacoes.models import Publicacao, MensagemPublicacao
 from usuarios.models import Usuario, Empresa
 from .forms import CadastroClienteForm, StatusPublicacaoForm, MateriaFormatadaForm, MensagemPublicacaoForm, NovaPublicacaoForm, AdminPublicacaoForm 
+from django.contrib import messages
 
 
 def home(request):
@@ -116,12 +117,14 @@ def detalhe_publicacao(request, id):
                 mensagem.publicacao = publicacao
                 mensagem.autor = usuario
                 mensagem.save()
+                messages.success(request, 'Mensagem enviada com sucesso.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
 
         elif acao == 'confirmar_publicacao' and usuario.tipo_usuario == 'cliente':
             if publicacao.status == 'aguardando_aprovacao':
                 publicacao.status = 'aprovado'
                 publicacao.save()
+                messages.success(request, 'Publicidade solicitada com sucesso.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
 
         elif acao == 'upload_materia' and usuario.tipo_usuario == 'funcionario':
@@ -133,6 +136,7 @@ def detalhe_publicacao(request, id):
 
             if materia_form.is_valid():
                 materia_form.save()
+                messages.success(request, 'Matéria formatada enviada com sucesso.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
         
         elif acao == 'editar_publicacao' and usuario.tipo_usuario == 'admin':
@@ -143,6 +147,7 @@ def detalhe_publicacao(request, id):
 
             if admin_form.is_valid():
                 admin_form.save()
+                messages.success(request, 'Dados da publicidade atualizados com sucesso.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
 
     mensagens = publicacao.mensagens.all()

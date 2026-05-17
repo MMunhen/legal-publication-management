@@ -13,6 +13,7 @@ class PublicacaoAdmin(admin.ModelAdmin):
         'status',
         'data_pedido',
         'data_publicacao',
+        'tamanho',
         'valor_definido',
         'valor',
     )
@@ -46,6 +47,7 @@ class PublicacaoAdmin(admin.ModelAdmin):
             'fields': (
                 'jornal',
                 'data_publicacao',
+                'tamanho',
                 'status',
             )
         }),

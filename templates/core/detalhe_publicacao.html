@@ -18,6 +18,9 @@
     <p><strong>Jornal:</strong> {{ publicacao.jornal|default:"-" }}</p>
     <p><strong>Data do pedido:</strong> {{ publicacao.data_pedido }}</p>
     <p><strong>Data da publicação:</strong> {{ publicacao.data_publicacao|default:"-" }}</p>
+    {% if request.user.tipo_usuario == 'admin' %}
+        <p><strong>Tamanho:</strong> {{ publicacao.tamanho|default:"-" }}</p>
+    {% endif %}
 
     {% if publicacao.arquivo %}
         <p>

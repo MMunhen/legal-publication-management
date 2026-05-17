@@ -29,6 +29,10 @@
             <th>Jornal</th>
             <th>Data de Publicação</th>
 
+            {% if request.user.tipo_usuario == 'admin' %}
+                <th>Tamanho</th>
+            {% endif %}
+
             {% if request.user.tipo_usuario != 'funcionario' %}
                 <th>Valor</th>
             {% endif %}
@@ -48,6 +52,10 @@
                 </td>
                 <td>{{ publicacao.jornal|default:"-" }}</td>
                 <td>{{ publicacao.data_publicacao|default:"-" }}</td>
+
+                {% if request.user.tipo_usuario == 'admin' %}
+                    <td>{{ publicacao.tamanho|default:"-" }}</td>
+                {% endif %}
 
                 {% if request.user.tipo_usuario != 'funcionario' %}
                     <td>
