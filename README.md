@@ -17,24 +17,31 @@ Sistema web para gerenciamento de publicidade legal em jornais e diários oficia
   - Administrador
   - Funcionário
   - Cliente
-- Cadastro de publicidades
-- Upload de arquivos
-- Controle de status
-- Controle financeiro com valor opcional
-- Painel administrativo customizado no Django Admin
+- Login e logout
+- Dashboard com informações diferentes para cada tipo de usuário
+- Solicitação de nova publicidade pelo cliente
+- Upload da matéria formatada pelo funcionário
+- Chat entre administrador e cliente
+- Controle de status da publicidade
+- Edição de dados da publicidade pelo administrador
+- Controle de valor da publicidade
+- Registro interno do tamanho da publicidade
+- Mensagens de feedback para ações realizadas
+
 
 # Estrutura do projeto
 
 - `usuarios`: gerenciamento de empresas e usuários
 - `publicacoes`: cadastro e acompanhamento das publicidades
+- `core`: páginas principais, login, cadastro, dashboard e fluxos do sistema
 
 # Próximos passos
 
-- Implementar sistema de login
-- Criar dashboards específicos para cada tipo de usuário
-- Desenvolver formulários próprios fora do Django Admin
-- Adicionar preenchimento automático dos dados da empresa a partir do CNPJ
-- Publicar o sistema em produção
+- Melhorar o layout com Bootstrap
+- Criar página de perfil do usuário
+- Melhorar a organização visual do chat
+- Adicionar filtros no dashboard
+- Preparar o sistema para deploy
 
 # Objetivo do projeto
 
