@@ -62,7 +62,7 @@ class PublicacaoAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "funcionario_responsavel":
             kwargs["queryset"] = Usuario.objects.filter(
-                tipo_usuario__in=['admin', 'funcionario'],
+                tipo_usuario__in=['funcionario'],
                 is_active=True
             )
 

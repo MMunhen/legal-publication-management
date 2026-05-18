@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from publicacoes.models import Publicacao, MensagemPublicacao
+from publicacoes.models import Publicacao
 from usuarios.models import Usuario, Empresa
 from .forms import CadastroClienteForm, StatusPublicacaoForm, MateriaFormatadaForm, MensagemPublicacaoForm, NovaPublicacaoForm, AdminPublicacaoForm, MinhaContaForm 
 from django.contrib import messages
@@ -13,7 +13,11 @@ def home(request):
 def dashboard(request):
     usuario = request.user
     nova_publicacao_form = None
+
     status_filtro = request.GET.get('status')
+    jornal_filtro = request.GET.get('jornal')
+    cliente_filtro = request.GET.get('cliente')
+    funcionario_filtro = request.GET.get('funcionario')
 
     if usuario.tipo_usuario == 'admin':
         publicacoes = Publicacao.objects.all()
@@ -45,16 +49,45 @@ def dashboard(request):
                     publicacao.status = 'pendente'
                     publicacao.save()
 
+                    messages.success(request, 'Publicidade solicitada com sucesso.')
                     return redirect('detalhe_publicacao', id=publicacao.id)
+    publicacoes_base = publicacoes
     
     if status_filtro:
         publicacoes = publicacoes.filter(status=status_filtro)
+
+    if jornal_filtro:
+        publicacoes = publicacoes.filter(jornal=jornal_filtro)
+
+    if usuario.tipo_usuario == 'admin':
+        if cliente_filtro:
+            publicacoes = publicacoes.filter(cliente_id=cliente_filtro)
+
+        if funcionario_filtro:
+            publicacoes = publicacoes.filter(
+                funcionario_responsavel_id=funcionario_filtro
+            )
+
+    jornais_opcoes = publicacoes_base.exclude(jornal='').values_list('jornal',flat=True).distinct().order_by('jornal')
+
+    clientes_opcoes = Empresa.objects.all().order_by('nome')
+
+    funcionarios_opcoes = Usuario.objects.filter(
+        tipo_usuario__in=['funcionario'],
+        is_active=True
+    ).order_by('username')
 
     return render(request, 'core/dashboard.html', {
         'publicacoes': publicacoes,
         'nova_publicacao_form': nova_publicacao_form,
         'status_filtro': status_filtro,
+        'jornal_filtro': jornal_filtro,
+        'cliente_filtro': cliente_filtro,
+        'funcionario_filtro': funcionario_filtro,
         'status_opcoes': Publicacao.STATUS,
+        'jornais_opcoes': jornais_opcoes,
+        'clientes_opcoes': clientes_opcoes,
+        'funcionarios_opcoes': funcionarios_opcoes,
     })
 
 def cadastro_cliente(request):
