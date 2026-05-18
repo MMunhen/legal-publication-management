@@ -13,6 +13,7 @@ def home(request):
 def dashboard(request):
     usuario = request.user
     nova_publicacao_form = None
+    status_filtro = request.GET.get('status')
 
     if usuario.tipo_usuario == 'admin':
         publicacoes = Publicacao.objects.all()
@@ -45,10 +46,15 @@ def dashboard(request):
                     publicacao.save()
 
                     return redirect('detalhe_publicacao', id=publicacao.id)
+    
+    if status_filtro:
+        publicacoes = publicacoes.filter(status=status_filtro)
 
     return render(request, 'core/dashboard.html', {
         'publicacoes': publicacoes,
         'nova_publicacao_form': nova_publicacao_form,
+        'status_filtro': status_filtro,
+        'status_opcoes': Publicacao.STATUS,
     })
 
 def cadastro_cliente(request):
