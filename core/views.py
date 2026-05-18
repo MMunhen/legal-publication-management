@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from publicacoes.models import Publicacao, MensagemPublicacao
 from usuarios.models import Usuario, Empresa
-from .forms import CadastroClienteForm, StatusPublicacaoForm, MateriaFormatadaForm, MensagemPublicacaoForm, NovaPublicacaoForm, AdminPublicacaoForm 
+from .forms import CadastroClienteForm, StatusPublicacaoForm, MateriaFormatadaForm, MensagemPublicacaoForm, NovaPublicacaoForm, AdminPublicacaoForm, MinhaContaForm 
 from django.contrib import messages
 
 
@@ -62,16 +62,18 @@ def cadastro_cliente(request):
                 cnpj=cnpj,
                 defaults={
                     'nome': form.cleaned_data['empresa'],
-                    'telefone': form.cleaned_data['telefone'],
+                    'telefone': form.cleaned_data['telefone_empresa'],
                 }
             )
 
             Usuario.objects.create_user(
                 username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
                 password=form.cleaned_data['password'],
                 tipo_usuario='cliente',
                 empresa=empresa,
                 representante=form.cleaned_data['representante'],
+                celular=form.cleaned_data['celular'],
                 is_active=True,
                 is_staff=False,
             )
@@ -159,4 +161,27 @@ def detalhe_publicacao(request, id):
         'mensagem_form': mensagem_form,
         'mensagens': mensagens,
         'admin_form': admin_form,
+    })
+
+@login_required
+def minha_conta(request):
+    if request.user.tipo_usuario != 'cliente':
+        return render(request, 'core/minha_conta.html')
+
+    if request.method == 'POST':
+        form = MinhaContaForm(
+            request.POST,
+            usuario=request.user
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Dados da conta atualizados com sucesso.')
+            return redirect('minha_conta')
+
+    else:
+        form = MinhaContaForm(usuario=request.user)
+
+    return render(request, 'core/minha_conta.html', {
+        'form': form
     })

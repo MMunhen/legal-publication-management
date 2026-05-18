@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Minha conta{% endblock %}
+
+{% block content %}
+    <h2>Minha conta</h2>
+
+    <p><strong>Usuário:</strong> {{ request.user.username }}</p>
+    <p><strong>Tipo de usuário:</strong> {{ request.user.get_tipo_usuario_display }}</p>
+    <p><strong>Representante:</strong> {{ request.user.representante|default:"-" }}</p>
+    <p><strong>E-mail:</strong> {{ request.user.email|default:"-" }}</p>
+    <p><strong>Celular:</strong> {{ request.user.celular|default:"-" }}</p>
+
+    {% if request.user.empresa %}
+        <h3>Dados da empresa</h3>
+
+        <p><strong>Empresa:</strong> {{ request.user.empresa.nome }}</p>
+        <p><strong>CNPJ:</strong> {{ request.user.empresa.cnpj }}</p>
+        <p><strong>Telefone da empresa:</strong> {{ request.user.empresa.telefone|default:"-" }}</p>
+    {% else %}
+        <p>Este usuário não está vinculado a uma empresa.</p>
+    {% endif %}
+
+    {% if request.user.tipo_usuario == 'cliente' %}
+        <hr>
+
+        <h3>Editar contato</h3>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Salvar alterações</button>
+        </form>
+    {% else %}
+        <p>Se precisar alterar seus dados, entre em contato com um administrador.</p>
+    {% endif %}
+
+    <br>
+
+    <a href="{% url 'dashboard' %}">Voltar ao dashboard</a>
+{% endblock %}

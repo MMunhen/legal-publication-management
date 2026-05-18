@@ -21,8 +21,10 @@ class UsuarioAdmin(UserAdmin):
         }),
         ('Dados do usuário', {
             'fields': (
+                'email',
                 'empresa',
                 'representante',
+                'celular',
             )
         }),
         ('Permissões Django', {
@@ -55,6 +57,8 @@ class UsuarioAdmin(UserAdmin):
                 'is_active',
                 'is_staff',
                 'is_superuser',
+                'email',
+                'celular',
             ),
         }),
     )
@@ -66,6 +70,8 @@ class UsuarioAdmin(UserAdmin):
         'representante',
         'is_staff',
         'is_active',
+        'email',
+        'celular',
     )
 
     list_filter = (
@@ -79,6 +85,7 @@ class UsuarioAdmin(UserAdmin):
         'empresa__nome',
         'empresa__cnpj',
         'representante',
+        'email',
     )
 
     ordering = ('username',)
