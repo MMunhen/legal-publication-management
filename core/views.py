@@ -46,7 +46,7 @@ def dashboard(request):
                 if nova_publicacao_form.is_valid():
                     publicacao = nova_publicacao_form.save(commit=False)
                     publicacao.cliente = usuario.empresa
-                    publicacao.status = 'pendente'
+                    publicacao.status = 'solicitado'
                     publicacao.save()
 
                     messages.success(request, 'Publicidade solicitada com sucesso.')
@@ -169,6 +169,10 @@ def detalhe_publicacao(request, id):
                 return redirect('detalhe_publicacao', id=publicacao.id)
 
         elif acao == 'upload_materia' and usuario.tipo_usuario == 'funcionario':
+            if 'arquivo_formatado' not in request.FILES:
+                messages.error(request, 'Selecione um arquivo.')
+                return redirect('detalhe_publicacao', id=publicacao.id)
+
             materia_form = MateriaFormatadaForm(
                 request.POST,
                 request.FILES,
@@ -190,6 +194,31 @@ def detalhe_publicacao(request, id):
                 admin_form.save()
                 messages.success(request, 'Dados da publicidade atualizados com sucesso.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
+        
+        elif acao == 'excluir_materia' and usuario.tipo_usuario in ['admin', 'funcionario']:
+            if publicacao.arquivo_formatado:
+                publicacao.arquivo_formatado.delete(save=False)
+                publicacao.arquivo_formatado = None
+                publicacao.save()
+
+                messages.success(request, 'Matéria formatada excluída com sucesso.')
+
+            return redirect('detalhe_publicacao', id=publicacao.id)
+        
+        elif acao == 'aceitar_solicitacao' and usuario.tipo_usuario == 'admin':
+            if publicacao.status == 'solicitado':
+                publicacao.status = 'pendente'
+                publicacao.save()
+
+                MensagemPublicacao.objects.create(
+                    publicacao=publicacao,
+                    autor=usuario,
+                    texto='Solicitação aceita. A publicidade foi encaminhada para produção.'
+                )
+
+                messages.success(request, 'Solicitação aceita com sucesso.')
+                return redirect('detalhe_publicacao', id=publicacao.id)
+        
 
     mensagens = publicacao.mensagens.all()
 

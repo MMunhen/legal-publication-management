@@ -4,6 +4,7 @@ from usuarios.models import Empresa, Usuario
 
 class Publicacao(models.Model):
     STATUS = (
+        ('solicitado', 'Solicitação enviada'),
         ('pendente', 'Pendente'),
         ('aguardando_aprovacao', 'Aguardando Aprovação do Cliente'),
         ('aprovado', 'Aprovado'),
@@ -48,14 +49,7 @@ class Publicacao(models.Model):
 
     tamanho = models.CharField(max_length=50, blank=True)
 
-    valor_definido = models.BooleanField(default=False)
-
-    valor = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        blank=True,
-        null=True
-    )
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Publicação'

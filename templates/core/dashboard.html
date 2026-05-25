@@ -3,126 +3,196 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Dashboard</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Dashboard</h2>
+            <p class="mb-0">Bem-vindo, {{ request.user.username }}</p>
+            <p class="text-muted">Tipo de usuário: {{ request.user.get_tipo_usuario_display }}</p>
+        </div>
+    </div>
 
-    <p>Bem-vindo, {{ request.user.username }}</p>
-    <p>Tipo de usuário: {{ request.user.get_tipo_usuario_display }}</p>
-
-    <form method="get">
-        <label for="status">Status:</label>
-        <select name="status" id="status">
-            <option value="">Todos</option>
-
-            {% for valor, nome in status_opcoes %}
-                <option value="{{ valor }}" {% if status_filtro == valor %}selected{% endif %}>
-                    {{ nome }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label for="jornal">Jornal:</label>
-        <select name="jornal" id="jornal">
-            <option value="">Todos</option>
-
-            {% for jornal in jornais_opcoes %}
-                <option value="{{ jornal }}" {% if jornal_filtro == jornal %}selected{% endif %}>
-                    {{ jornal }}
-                </option>
-            {% endfor %}
-        </select>
-
-        {% if request.user.tipo_usuario == 'admin' %}
-            <label for="cliente">Cliente:</label>
-            <select name="cliente" id="cliente">
-                <option value="">Todos</option>
-
-                {% for cliente in clientes_opcoes %}
-                    <option value="{{ cliente.id }}" {% if cliente_filtro == cliente.id|stringformat:"s" %}selected{% endif %}>
-                        {{ cliente.nome }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <label for="funcionario">Funcionário:</label>
-            <select name="funcionario" id="funcionario">
-                <option value="">Todos</option>
-
-                {% for funcionario in funcionarios_opcoes %}
-                    <option value="{{ funcionario.id }}" {% if funcionario_filtro == funcionario.id|stringformat:"s" %}selected{% endif %}>
-                        {{ funcionario.username }}
-                    </option>
-                {% endfor %}
-            </select>
-        {% endif %}
-
-        <button type="submit">Filtrar</button>
-
-        <a href="{% url 'dashboard' %}">Limpar filtros</a>
-    </form>
-
-    <h3>Publicidades</h3>
-    
     {% if request.user.tipo_usuario == 'cliente' %}
-        <hr>
-        <details>
-            <summary>Solicitar nova publicidade</summary>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="acao" value="nova_publicacao">
-                {{ nova_publicacao_form.as_p }}
-                <button type="submit">Enviar solicitação</button>
-            </form>
-        </details>
+        <div class="card mb-4">
+            <div class="card-body">
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#novaPublicidade">
+                    Solicitar nova publicidade
+                </button>
+
+                <div class="collapse mt-3" id="novaPublicidade">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="acao" value="nova_publicacao">
+
+                        {{ nova_publicacao_form.as_p }}
+
+                        <button type="submit" class="btn btn-success">
+                            Enviar solicitação
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     {% endif %}
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>Título</th>
-            <th>Status</th>
-            <th>Jornal</th>
-            <th>Data de Publicação</th>
 
-            {% if request.user.tipo_usuario == 'admin' %}
-                <th>Tamanho</th>
-            {% endif %}
+    <div class="card mb-4">
+        <div class="card-header">
+            Filtros
+        </div>
 
-            {% if request.user.tipo_usuario != 'funcionario' %}
-                <th>Valor</th>
-            {% endif %}
-        </tr>
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">Todos</option>
 
-        {% for publicacao in publicacoes %}
-            <tr>
-                <td>
-                    <a href="{% url 'detalhe_publicacao' publicacao.id %}">{{ publicacao.titulo }}</a>
-                </td>
-                <td>
-                    {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
-                        Aguardando pagamento
-                    {% else %}
-                        {{ publicacao.get_status_display }}
-                    {% endif %}
-                </td>
-                <td>{{ publicacao.jornal|default:"-" }}</td>
-                <td>{{ publicacao.data_publicacao|default:"-" }}</td>
+                        {% for valor, nome in status_opcoes %}
+                            <option value="{{ valor }}" {% if status_filtro == valor %}selected{% endif %}>
+                                {{ nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="jornal" class="form-label">Jornal</label>
+                    <select name="jornal" id="jornal" class="form-select">
+                        <option value="">Todos</option>
+
+                        {% for jornal in jornais_opcoes %}
+                            <option value="{{ jornal }}" {% if jornal_filtro == jornal %}selected{% endif %}>
+                                {{ jornal }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
                 {% if request.user.tipo_usuario == 'admin' %}
-                    <td>{{ publicacao.tamanho|default:"-" }}</td>
+                    <div class="col-md-3">
+                        <label for="cliente" class="form-label">Cliente</label>
+                        <select name="cliente" id="cliente" class="form-select">
+                            <option value="">Todos</option>
+
+                            {% for cliente in clientes_opcoes %}
+                                <option value="{{ cliente.id }}" {% if cliente_filtro == cliente.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ cliente.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="funcionario" class="form-label">Funcionário</label>
+                        <select name="funcionario" id="funcionario" class="form-select">
+                            <option value="">Todos</option>
+
+                            {% for funcionario in funcionarios_opcoes %}
+                                <option value="{{ funcionario.id }}" {% if funcionario_filtro == funcionario.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ funcionario.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 {% endif %}
 
-                {% if request.user.tipo_usuario != 'funcionario' %}
-                    <td>
-                        {% if publicacao.valor_definido %}
-                            R$ {{ publicacao.valor }}
-                        {% else %}
-                            Não definido
-                        {% endif %}
-                    </td>
-                {% endif %}
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">Nenhuma publicidade encontrada.</td>
-            </tr>
-        {% endfor %}
-    </table>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-dark">
+                        Filtrar
+                    </button>
+
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                        Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Publicidades
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Status</th>
+                            <th>Jornal</th>
+                            <th>Data da publicação</th>
+
+                            {% if request.user.tipo_usuario == 'admin' %}
+                                <th>Tamanho</th>
+                            {% endif %}
+
+                            {% if request.user.tipo_usuario != 'funcionario' %}
+                                <th>Valor</th>
+                            {% endif %}
+
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for publicacao in publicacoes %}
+                            <tr>
+                                <td>{{ publicacao.titulo }}</td>
+
+                                <td>
+                                    {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
+                                        <span class="badge bg-warning text-dark">Aguardando pagamento</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ publicacao.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ publicacao.jornal|default:"-" }}</td>
+
+                                <td>{{ publicacao.data_publicacao|default:"-" }}</td>
+
+                                {% if request.user.tipo_usuario == 'admin' %}
+                                    <td>{{ publicacao.tamanho|default:"-" }}</td>
+                                {% endif %}
+
+                                {% if request.user.tipo_usuario != 'funcionario' %}
+                                    <td>
+                                        {% if publicacao.valor %}
+                                            R$ {{ publicacao.valor }}
+                                        {% else %}
+                                            Não definido
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+
+                                <td>
+                                    <a href="{% url 'detalhe_publicacao' publicacao.id %}" class="btn btn-sm btn-outline-primary">
+                                        Ver detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                {% if request.user.tipo_usuario == 'admin' %}
+                                    <td colspan="7" class="text-center">
+                                        Nenhuma publicidade encontrada.
+                                    </td>
+                                {% elif request.user.tipo_usuario == 'cliente' %}
+                                    <td colspan="6" class="text-center">
+                                        Nenhuma publicidade encontrada.
+                                    </td>
+                                {% else %}
+                                    <td colspan="5" class="text-center">
+                                        Nenhuma publicidade encontrada.
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

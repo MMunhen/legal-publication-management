@@ -3,134 +3,234 @@
 {% block title %}Detalhes da Publicidade{% endblock %}
 
 {% block content %}
-    <h2>{{ publicacao.titulo }}</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>{{ publicacao.titulo }}</h2>
+            <p class="text-muted mb-0">Detalhes da publicidade</p>
+        </div>
 
-    <p><strong>Cliente:</strong> {{ publicacao.cliente }}</p>
-    <p><strong>Funcionário responsável:</strong> {{ publicacao.funcionario_responsavel|default:"-" }}</p>
-    <p>
-        <strong>Status:</strong>
-            {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
-                Aguardando pagamento
-            {% else %}
-                {{ publicacao.get_status_display }}
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            Voltar
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Dados principais
+                </div>
+
+                <div class="card-body">
+                    <p><strong>Cliente:</strong> {{ publicacao.cliente }}</p>
+                    <p><strong>Funcionário responsável:</strong> {{ publicacao.funcionario_responsavel|default:"-" }}</p>
+
+                    <p>
+                        <strong>Status:</strong>
+
+                        {% if request.user.tipo_usuario == 'cliente' and publicacao.status == 'faturado' %}
+                            <span class="badge bg-warning text-dark">Aguardando pagamento</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ publicacao.get_status_display }}</span>
+                        {% endif %}
+                    </p>
+
+                    <p><strong>Jornal:</strong> {{ publicacao.jornal|default:"-" }}</p>
+                    <p><strong>Data do pedido:</strong> {{ publicacao.data_pedido }}</p>
+                    <p><strong>Data da publicação:</strong> {{ publicacao.data_publicacao|default:"-" }}</p>
+
+                    {% if request.user.tipo_usuario == 'admin' %}
+                        <p><strong>Tamanho:</strong> {{ publicacao.tamanho|default:"-" }}</p>
+                    {% endif %}
+
+                    {% if request.user.tipo_usuario != 'funcionario' %}
+                        <p>
+                            <strong>Valor:</strong>
+
+                            {% if publicacao.valor %}
+                                R$ {{ publicacao.valor }}
+                            {% else %}
+                                Não definido
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    Arquivos
+                </div>
+
+                <div class="card-body">
+                    {% if publicacao.arquivo %}
+                        <p>
+                            <strong>Texto:</strong>
+                            <a href="{{ publicacao.arquivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                Abrir arquivo
+                            </a>
+                        </p>
+                    {% else %}
+                        <p><strong>Texto:</strong> Nenhum arquivo enviado.</p>
+                    {% endif %}
+
+                    {% if publicacao.arquivo_formatado %}
+                        <p>
+                            <strong>Matéria formatada:</strong>
+                            <a href="{{ publicacao.arquivo_formatado.url }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                Abrir matéria final
+                            </a>
+                        </p>
+
+                        {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'funcionario' %}
+                            <form method="post" class="mb-3">
+                                {% csrf_token %}
+                                <input type="hidden" name="acao" value="excluir_materia">
+
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Excluir matéria formatada
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <p><strong>Matéria formatada:</strong> Ainda não enviada.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            {% if request.user.tipo_usuario == 'admin' %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Área do administrador
+                    </div>
+
+                    <div class="card-body">
+                        {% if publicacao.status == 'solicitado' %}
+                            <form method="post" class="mb-3">
+                                {% csrf_token %}
+                                <input type="hidden" name="acao" value="aceitar_solicitacao">
+
+                                <button type="submit" class="btn btn-success">
+                                    Aceitar solicitação
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        <h5>Editar dados da publicidade</h5>
+
+                        <form method="post" class="mb-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="editar_publicacao">
+
+                            {{ admin_form.as_p }}
+
+                            <button type="submit" class="btn btn-primary">
+                                Salvar alterações
+                            </button>
+                        </form>
+
+                        <h5>Atualizar status</h5>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="atualizar_status">
+
+                            {{ status_form.as_p }}
+
+                            <button type="submit" class="btn btn-dark">
+                                Atualizar status
+                            </button>
+                        </form>
+                    </div>
+                </div>
             {% endif %}
-    </p>
-    <p><strong>Jornal:</strong> {{ publicacao.jornal|default:"-" }}</p>
-    <p><strong>Data do pedido:</strong> {{ publicacao.data_pedido }}</p>
-    <p><strong>Data da publicação:</strong> {{ publicacao.data_publicacao|default:"-" }}</p>
-    {% if request.user.tipo_usuario == 'admin' %}
-        <p><strong>Tamanho:</strong> {{ publicacao.tamanho|default:"-" }}</p>
+
+            {% if request.user.tipo_usuario == 'cliente' %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Área do cliente
+                    </div>
+
+                    <div class="card-body">
+                        {% if publicacao.status == 'aguardando_aprovacao' %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="acao" value="confirmar_publicacao">
+
+                                <button type="submit" class="btn btn-success">
+                                    Confirmar publicidade
+                                </button>
+                            </form>
+                        {% else %}
+                            <p class="mb-0">
+                                Nenhuma ação disponível no momento.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if request.user.tipo_usuario == 'funcionario' %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Área do funcionário
+                    </div>
+
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="upload_materia">
+
+                            {{ materia_form.as_p }}
+
+                            <button type="submit" class="btn btn-success">
+                                Enviar matéria formatada
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if request.user.tipo_usuario == 'admin' or request.user.tipo_usuario == 'cliente' %}
+        <div class="card mb-4">
+            <div class="card-header">
+                Chat
+            </div>
+
+            <div class="card-body">
+                {% for mensagem in mensagens %}
+                    <div class="border rounded p-3 mb-3">
+                        <p class="mb-1">
+                            <strong>{{ mensagem.autor }}:</strong>
+                        </p>
+
+                        <p class="mb-1">
+                            {{ mensagem.texto }}
+                        </p>
+
+                        <small class="text-muted">
+                            {{ mensagem.criada_em }}
+                        </small>
+                    </div>
+                {% empty %}
+                    <p>Nenhuma mensagem ainda.</p>
+                {% endfor %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="enviar_mensagem">
+
+                    {{ mensagem_form.as_p }}
+
+                    <button type="submit" class="btn btn-primary">
+                        Enviar mensagem
+                    </button>
+                </form>
+            </div>
+        </div>
     {% endif %}
-
-    {% if publicacao.arquivo %}
-        <p>
-            <strong>Texto:</strong>
-            <a href="{{ publicacao.arquivo.url }}" target="_blank">Abrir arquivo</a>
-        </p>
-    {% endif %}
-
-    {% if publicacao.arquivo_formatado %}
-        <p>
-            <strong>Matéria formatada:</strong>
-            <a href="{{ publicacao.arquivo_formatado.url }}" target="_blank">Abrir matéria final</a>
-        </p>
-    {% endif %}
-
-    {% if request.user.tipo_usuario == 'admin' %}
-        <hr>
-
-        <h3>Área do administrador</h3>
-
-        <h4>Atualizar status</h4>
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="acao" value="atualizar_status">
-            {{ status_form.as_p }}
-            <button type="submit">Atualizar status</button>
-        </form>
-
-        <h4>Chat com o cliente</h4>
-
-        {% for mensagem in mensagens %}
-            <p>
-                <strong>{{ mensagem.autor }}:</strong>
-                {{ mensagem.texto }}
-                <br>
-                <small>{{ mensagem.criada_em }}</small>
-            </p>
-        {% empty %}
-            <p>Nenhuma mensagem ainda.</p>
-        {% endfor %}
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="acao" value="enviar_mensagem">
-            {{ mensagem_form.as_p }}
-            <button type="submit">Enviar mensagem</button>
-        </form>
-
-        <h4>Editar dados da publicidade</h4>
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="acao" value="editar_publicacao">
-
-            {{ admin_form.as_p }}
-
-            <button type="submit">Salvar alterações</button>
-        </form>
-
-
-    {% endif %}
-
-    {% if request.user.tipo_usuario == 'cliente' %}
-        <hr>
-
-        <h3>Área do cliente</h3>
-
-        {% if publicacao.status == 'aguardando_aprovacao' %}
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="acao" value="confirmar_publicacao">
-                <button type="submit">Confirmar publicação</button>
-            </form>
-        {% endif %}
-
-        <h3>Chat com o administrador</h3>
-
-        {% for mensagem in mensagens %}
-            <p>
-                <strong>{{ mensagem.autor }}:</strong>
-                {{ mensagem.texto }}
-                <br>
-                <small>{{ mensagem.criada_em }}</small>
-            </p>
-        {% empty %}
-            <p>Nenhuma mensagem ainda.</p>
-        {% endfor %}
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="acao" value="enviar_mensagem">
-            {{ mensagem_form.as_p }}
-            <button type="submit">Enviar mensagem</button>
-        </form>
-    {% endif %}
-
-    {% if request.user.tipo_usuario == 'funcionario' %}
-        <hr>
-
-        <h3>Área do funcionário</h3>
-
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="acao" value="upload_materia">
-            {{ materia_form.as_p }}
-            <button type="submit">Enviar matéria formatada</button>
-        </form>
-    {% endif %}
-
-    <br>
-    <a href="{% url 'dashboard' %}">Voltar</a>
 {% endblock %}

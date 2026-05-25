@@ -3,40 +3,76 @@
 {% block title %}Minha conta{% endblock %}
 
 {% block content %}
-    <h2>Minha conta</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Minha conta</h2>
+            <p class="text-muted mb-0">Informações do usuário logado</p>
+        </div>
 
-    <p><strong>Usuário:</strong> {{ request.user.username }}</p>
-    <p><strong>Tipo de usuário:</strong> {{ request.user.get_tipo_usuario_display }}</p>
-    <p><strong>Representante:</strong> {{ request.user.representante|default:"-" }}</p>
-    <p><strong>E-mail:</strong> {{ request.user.email|default:"-" }}</p>
-    <p><strong>Celular:</strong> {{ request.user.celular|default:"-" }}</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            Voltar ao dashboard
+        </a>
+    </div>
 
-    {% if request.user.empresa %}
-        <h3>Dados da empresa</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Dados do usuário
+                </div>
 
-        <p><strong>Empresa:</strong> {{ request.user.empresa.nome }}</p>
-        <p><strong>CNPJ:</strong> {{ request.user.empresa.cnpj }}</p>
-        <p><strong>Telefone da empresa:</strong> {{ request.user.empresa.telefone|default:"-" }}</p>
-    {% else %}
-        <p>Este usuário não está vinculado a uma empresa.</p>
-    {% endif %}
+                <div class="card-body">
+                    <p><strong>Usuário:</strong> {{ request.user.username }}</p>
+                    <p><strong>Tipo de usuário:</strong> {{ request.user.get_tipo_usuario_display }}</p>
+                    <p><strong>Representante:</strong> {{ request.user.representante|default:"-" }}</p>
+                    <p><strong>E-mail:</strong> {{ request.user.email|default:"-" }}</p>
+                    <p><strong>Celular:</strong> {{ request.user.celular|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Dados da empresa
+                </div>
+
+                <div class="card-body">
+                    {% if request.user.empresa %}
+                        <p><strong>Empresa:</strong> {{ request.user.empresa.nome }}</p>
+                        <p><strong>CNPJ:</strong> {{ request.user.empresa.cnpj }}</p>
+                        <p><strong>Telefone da empresa:</strong> {{ request.user.empresa.telefone|default:"-" }}</p>
+                    {% else %}
+                        <p class="mb-0">
+                            Este usuário não está vinculado a uma empresa.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
     {% if request.user.tipo_usuario == 'cliente' %}
-        <hr>
+        <div class="card">
+            <div class="card-header">
+                Editar contato
+            </div>
 
-        <h3>Editar contato</h3>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
+                    {{ form.as_p }}
 
-            <button type="submit">Salvar alterações</button>
-        </form>
+                    <button type="submit" class="btn btn-primary">
+                        Salvar alterações
+                    </button>
+                </form>
+            </div>
+        </div>
     {% else %}
-        <p>Se precisar alterar seus dados, entre em contato com um administrador.</p>
+        <div class="alert alert-info">
+            Para alterar seus dados, entre em contato com um administrador.
+        </div>
     {% endif %}
-
-    <br>
-
-    <a href="{% url 'dashboard' %}">Voltar ao dashboard</a>
 {% endblock %}

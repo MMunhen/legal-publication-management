@@ -1,17 +1,97 @@
 {% extends 'base.html' %}
 
-{% block title %}Cadastro de Cliente{% endblock %}
+{% block title %}Cadastro{% endblock %}
 
 {% block content %}
-    <h2>Cadastro de Cliente</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">Cadastro de Cliente</h4>
+                </div>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
-    </form>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Preencha os dados abaixo para criar sua conta e solicitar publicidades.
+                    </p>
 
-    <p>
-        <a href="{% url 'login' %}">Já tenho conta</a>
-    </p>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.username.label }}</label>
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.password.label }}</label>
+                            {{ form.password }}
+                            {{ form.password.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.password_confirm.label }}</label>
+                            {{ form.password_confirm }}
+                            {{ form.password_confirm.errors }}
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.empresa.label }}</label>
+                            {{ form.empresa }}
+                            {{ form.empresa.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.cnpj.label }}</label>
+                            {{ form.cnpj }}
+                            {{ form.cnpj.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.telefone_empresa.label }}</label>
+                            {{ form.telefone_empresa }}
+                            {{ form.telefone_empresa.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.representante.label }}</label>
+                            {{ form.representante }}
+                            {{ form.representante.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.celular.label }}</label>
+                            {{ form.celular }}
+                            {{ form.celular.errors }}
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                Cadastrar
+                            </button>
+
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                                Já tenho conta
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

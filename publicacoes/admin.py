@@ -14,14 +14,12 @@ class PublicacaoAdmin(admin.ModelAdmin):
         'data_pedido',
         'data_publicacao',
         'tamanho',
-        'valor_definido',
         'valor',
     )
 
     list_filter = (
         'status',
         'jornal',
-        'valor_definido',
         'data_publicacao',
     )
 
@@ -53,7 +51,6 @@ class PublicacaoAdmin(admin.ModelAdmin):
         }),
         ('Financeiro', {
             'fields': (
-                'valor_definido',
                 'valor',
             )
         }),

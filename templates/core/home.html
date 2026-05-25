@@ -3,15 +3,37 @@
 {% block title %}Início{% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <p>Bem-vindo, {{ user.username }}.</p>
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <h1 class="mb-3">Sistema de Publicidade Legal</h1>
 
-        <a href="{% url 'dashboard' %}">Acessar Dashboard</a>
-    {% else %}
-        <h2>Bem-vindo</h2>
+                    <p class="lead">
+                        Gerencie solicitações, arquivos, aprovações e status de publicidades em jornais e diários oficiais.
+                    </p>
 
-        <p>
-            Acesse o sistema ou crie uma conta para acompanhar suas publicidades.
-        </p>
-    {% endif %}
+                    {% if user.is_authenticated %}
+                        <p class="text-muted">
+                            Bem-vindo, {{ user.username }}.
+                        </p>
+
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                            Acessar dashboard
+                        </a>
+                    {% else %}
+                        <div class="d-flex justify-content-center gap-2 mt-4">
+                            <a href="{% url 'login' %}" class="btn btn-primary">
+                                Entrar
+                            </a>
+
+                            <a href="{% url 'cadastro_cliente' %}" class="btn btn-outline-secondary">
+                                Criar conta
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
