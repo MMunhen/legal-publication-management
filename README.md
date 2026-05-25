@@ -9,10 +9,10 @@ Sistema web para gerenciamento de publicidade legal em jornais e diários oficia
 - MySQL
 - HTML/CSS
 - JavaScript
+- Bootstrap
 
 # Funcionalidades implementadas
 
-- Cadastro de empresas
 - Cadastro de usuários com diferentes perfis:
   - Administrador
   - Funcionário
@@ -34,14 +34,6 @@ Sistema web para gerenciamento de publicidade legal em jornais e diários oficia
 - `usuarios`: gerenciamento de empresas e usuários
 - `publicacoes`: cadastro e acompanhamento das publicidades
 - `core`: páginas principais, login, cadastro, dashboard e fluxos do sistema
-
-# Próximos passos
-
-- Melhorar o layout com Bootstrap
-- Criar página de perfil do usuário
-- Melhorar a organização visual do chat
-- Adicionar filtros no dashboard
-- Preparar o sistema para deploy
 
 # Objetivo do projeto
 
