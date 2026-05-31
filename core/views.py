@@ -165,7 +165,7 @@ def detalhe_publicacao(request, id):
             if publicacao.status == 'aguardando_aprovacao':
                 publicacao.status = 'aprovado'
                 publicacao.save()
-                messages.success(request, 'Publicidade solicitada com sucesso.')
+                messages.success(request, 'Solicitação enviada. Em breve um administrador irá analisar o pedido.')
                 return redirect('detalhe_publicacao', id=publicacao.id)
 
         elif acao == 'upload_materia' and usuario.tipo_usuario == 'funcionario':

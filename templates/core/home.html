@@ -3,14 +3,19 @@
 {% block title %}Início{% endblock %}
 
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <div class="card shadow-sm">
-                <div class="card-body py-5">
-                    <h1 class="mb-3">Sistema de Publicidade Legal</h1>
+    <div class="p-5 mb-4 bg-light rounded-3 border">
+        <div class="container-fluid py-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">Sistema de Publicidade Legal</h1>
 
-                    <p class="lead">
-                        Gerencie solicitações, arquivos, aprovações e status de publicidades em jornais e diários oficiais.
+                    <p class="lead mt-3">
+                        Plataforma para gerenciamento de publicidades legais em jornais e diários oficiais.
+                    </p>
+
+                    <p class="text-muted">
+                        O sistema permite organizar solicitações, arquivos, status, valores e comunicação entre cliente,
+                        funcionário e administrador em um único ambiente.
                     </p>
 
                     {% if user.is_authenticated %}
@@ -18,20 +23,89 @@
                             Bem-vindo, {{ user.username }}.
                         </p>
 
-                        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
                             Acessar dashboard
                         </a>
                     {% else %}
-                        <div class="d-flex justify-content-center gap-2 mt-4">
-                            <a href="{% url 'login' %}" class="btn btn-primary">
+                        <div class="d-flex gap-2 mt-4">
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
                                 Entrar
                             </a>
 
-                            <a href="{% url 'cadastro_cliente' %}" class="btn btn-outline-secondary">
+                            <a href="{% url 'cadastro_cliente' %}" class="btn btn-outline-secondary btn-lg">
                                 Criar conta
                             </a>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Cliente</h4>
+
+                    <p class="card-text">
+                        Pode solicitar novas publicidades, enviar o texto inicial, acompanhar o status,
+                        visualizar valores, responder mensagens e confirmar aprovações.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Funcionário</h4>
+
+                    <p class="card-text">
+                        Visualiza as publicidades atribuídas, acompanha as informações necessárias
+                        e envia a matéria formatada para publicação.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Administrador</h4>
+
+                    <p class="card-text">
+                        Gerencia publicidades, clientes, funcionários, valores, status,
+                        arquivos e a comunicação com os clientes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            Principais recursos
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li>Cadastro de empresas e usuários</li>
+                        <li>Perfis de acesso por tipo de usuário</li>
+                        <li>Solicitação de nova publicidade</li>
+                        <li>Upload de texto inicial</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li>Upload da matéria formatada</li>
+                        <li>Controle de status da publicidade</li>
+                        <li>Chat entre administrador e cliente</li>
+                        <li>Dashboard com filtros por perfil</li>
+                    </ul>
                 </div>
             </div>
         </div>
