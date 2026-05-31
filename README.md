@@ -2,6 +2,14 @@
 
 Sistema web para gerenciamento de publicidade legal em jornais e diários oficiais.
 
+## Capturas de tela
+
+### Página inicial
+![Página inicial](assets/screenshots/home.png)
+
+### Dashboard
+![Dashboard](assets/screenshots/dashboard.png)
+
 # Tecnologias utilizadas
 
 - Python
